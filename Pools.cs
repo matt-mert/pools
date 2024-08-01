@@ -12,7 +12,7 @@
 //          Pools.Get<SomePool>().Initialize(someObject);
 //    3) Grab objects from the pool, eg:
 //          Pools.Get<SomePool>().GrabObject();
-//    4) Don't forget to release your objects! Eg on OnDestroy():
+//    4) Release objects to the pool, eg:
 //          Pools.Get<SomePool>().ReleaseObject(grabbedObject);
 //    5) If you don't want to use global Pools, you can have your very own PoolHub
 //       instance in your class
