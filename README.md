@@ -1,7 +1,7 @@
 # Pools
 ### A typesafe, lightweight pooling lib for Unity.
 ---
-Heavily inspired by Signals by Yanko Oliveira
+Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
 
 ### Usage:
 1) Define your pool, eg:
@@ -16,7 +16,7 @@ Pools.Get<SomePool>().Initialize(SomePrefab);
 ```c#
 var obj = Pools.Get<SomePool>().Grab();
 ```
-4) Don't forget to release your objects! Eg on OnDestroy():
+4) Release objects to the pool, eg:
 ```c#
 Pools.Get<SomePool>().Release(obj);
 ```
