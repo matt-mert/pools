@@ -1,7 +1,7 @@
 // ========================================================================================
 // Pools - A typesafe, lightweight pooling lib for Unity.
 // ========================================================================================
-// 2024, Mert Kucukakinci  / http://linkedin.com/mertkucukakinci
+// 2024, Mert Kucukakinci  / http://linkedin.com/mert-kucukakinci
 // ========================================================================================
 // Heavily inspired by Signals by Yanko Oliveira
 //
