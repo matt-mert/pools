@@ -3,6 +3,8 @@
 ---
 Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
 
+Author: matt-mert
+
 ### Usage:
 1) Define your pool, eg:
 ```c#
