@@ -1,9 +1,10 @@
 // ========================================================================================
 // Pools - A typesafe, lightweight pooling lib for Unity.
 // ========================================================================================
-// 2024, Mert Kucukakinci  / http://linkedin.com/mert-kucukakinci
+// 2024, Mert Kucukakinci  / http://github.com/matt-mert
 // ========================================================================================
-// Heavily inspired by Signals by Yanko Oliveira
+// Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
+// You can find the repository of Signals at https://github.com/yankooliveira/signals
 //
 // Usage:
 //    1) Define your pool, eg:
