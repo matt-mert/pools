@@ -199,6 +199,12 @@ namespace mattmert.Utils
                 return;
             }
 
+            if (prefab == null)
+            {
+                Debug.LogError($"Pool of type {typeof(T)} could not be initialized! Given prefab is null!");
+                return;
+            }
+
             if (capacity == -1)
                 capacity = Pools.DefaultCapacity;
 
