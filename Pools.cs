@@ -143,13 +143,13 @@ namespace mattmert.Utils
         //     return Bind(typeof(T));
         // }
         
-        private IPool GetPoolByHash(string signalHash)
+        private IPool GetPoolByHash(string poolHash)
         {
-            foreach (var signal in _pools.Values)
+            foreach (var pool in _pools.Values)
             {
-                if (signal.Hash == signalHash)
+                if (pool.Hash == poolHash)
                 {
-                    return signal;
+                    return pool;
                 }
             }
 
