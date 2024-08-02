@@ -43,11 +43,11 @@ namespace mattmert.Utils
         public static int DefaultCapacity = 10;
         public static int DefaultMaxSize = 1000;
         
-        private static readonly PoolHub Hub = new();
+        private static readonly PoolHub _hub = new();
 
         public static T Get<T>() where T : IPool, new()
         {
-            return Hub.Get<T>();
+            return _hub.Get<T>();
         }
 
         public static void SetDefaultCapacity(int capacity)
@@ -62,12 +62,12 @@ namespace mattmert.Utils
 
         public static void ClearPoolFromHash<T>(string poolHash) where T : Component
         {
-            Hub.ClearPoolFromHash<T>(poolHash);
+            _hub.ClearPoolFromHash<T>(poolHash);
         }
 
         public static void DisposePoolFromHash<T>(string poolHash) where T : Component
         {
-            Hub.DisposePoolFromHash<T>(poolHash);
+            _hub.DisposePoolFromHash<T>(poolHash);
         }
     }
 
