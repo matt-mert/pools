@@ -25,82 +25,62 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace mattmert.Utils
+namespace mattmert.PoolSystem
 {
-    /// <summary>
-    /// Base interface for Pools
-    /// </summary>
     public interface IPool
     {
         string Hash { get; }
     }
-
-    /// <summary>
-    /// Pools main facade class for global, game-wide pools
-    /// </summary>
+    
     public static class Pools
     {
         public static int DefaultCapacity = 10;
         public static int DefaultMaxSize = 1000;
         
         private static readonly PoolHub _hub = new();
-
+        
         public static T Get<T>() where T : IPool, new()
         {
             return _hub.Get<T>();
         }
-
+        
         public static void SetDefaultCapacity(int capacity)
         {
             DefaultCapacity = capacity;
         }
-
+        
         public static void SetDefaultMaxSize(int maxSize)
         {
             DefaultMaxSize = maxSize;
         }
-
+        
         public static void ClearPoolFromHash<T>(string poolHash) where T : Component
         {
             _hub.ClearPoolFromHash<T>(poolHash);
         }
-
+        
         public static void DisposePoolFromHash<T>(string poolHash) where T : Component
         {
             _hub.DisposePoolFromHash<T>(poolHash);
         }
     }
-
-    /// <summary>
-    /// A hub for Pools you can implement in your classes
-    /// </summary>
+    
     public class PoolHub
     {
         private readonly Dictionary<Type, IPool> _pools = new();
-
-        /// <summary>
-        /// Getter for a pool of a given type
-        /// </summary>
-        /// <typeparam name="T">Type of pool</typeparam>
-        /// <returns>The proper pool binding</returns>
+        
         public T Get<T>() where T : IPool, new()
         {
             var poolType = typeof(T);
-
+            
             if (_pools.TryGetValue(poolType, out var pool))
             {
                 return (T)pool;
             }
-
+            
             return (T)Bind(poolType);
         }
-
-        /// <summary>
-        /// Manually provide a PoolHash and clear the corresponding pool
-        /// (you most likely want to use a Clear, unless you know exactly
-        /// what you are doing)
-        /// </summary>
-        /// <param name="poolHash">Unique hash for pool</param>
+        
         public void ClearPoolFromHash<T>(string poolHash) where T : Component
         {
             var pool = GetPoolByHash(poolHash);
@@ -109,13 +89,7 @@ namespace mattmert.Utils
                 aPool.Clear();
             }
         }
-
-        /// <summary>
-        /// Manually provide a PoolHash and dispose the corresponding pool
-        /// (you most likely want to use a Dispose, unless you know exactly
-        /// what you are doing)
-        /// </summary>
-        /// <param name="poolHash">Unique hash for signal</param>
+        
         public void DisposePoolFromHash<T>(string poolHash) where T : Component
         {
             var pool = GetPoolByHash(poolHash);
@@ -124,7 +98,7 @@ namespace mattmert.Utils
                 aPool.Dispose();
             }
         }
-
+        
         private IPool Bind(Type poolType)
         {
             if (_pools.TryGetValue(poolType, out var pool))
@@ -132,41 +106,35 @@ namespace mattmert.Utils
                 Debug.LogError($"Pool already registered for type {poolType}");
                 return default;
             }
-
+            
             pool = (IPool)Activator.CreateInstance(poolType);
             _pools.Add(poolType, pool);
             return pool;
         }
         
-        // private IPool Bind<T>() where T : IPool, new()
-        // {
-        //     return Bind(typeof(T));
-        // }
+        private IPool Bind<T>() where T : IPool, new()
+        {
+            return Bind(typeof(T));
+        }
         
-        private IPool GetPoolByHash(string poolHash)
+        private IPool GetPoolByHash(string boardHash)
         {
             foreach (var pool in _pools.Values)
             {
-                if (pool.Hash == poolHash)
+                if (pool.Hash == boardHash)
                 {
                     return pool;
                 }
             }
-
+            
             return null;
         }
     }
-
-    /// <summary>
-    /// Abstract class for Pools, provides hash by type functionality
-    /// </summary>
+    
     public abstract class ABasePool : IPool
     {
         private string _hash;
-
-        /// <summary>
-        /// Unique id for this pool
-        /// </summary>
+        
         public string Hash
         {
             get
@@ -175,22 +143,19 @@ namespace mattmert.Utils
                 {
                     _hash = GetType().ToString();
                 }
-
+                
                 return _hash;
             }
         }
     }
-
-    /// <summary>
-    /// Strongly typed pools
-    /// </summary>
+    
     public abstract class APool<T> : ABasePool where T : Component
     {
         private ObjectPool<T> _pool;
         private Transform _root;
         private T _prefab;
         private bool _initialized;
-
+        
         public void Initialize(T prefab, int capacity = -1, int maxSize = -1, Transform root = null)
         {
             if (_initialized)
@@ -198,27 +163,30 @@ namespace mattmert.Utils
                 Debug.LogError($"Pool of type {typeof(T)} is already initialized!");
                 return;
             }
-
+            
             if (prefab == null)
             {
                 Debug.LogError($"Pool of type {typeof(T)} could not be initialized! Given prefab is null!");
                 return;
             }
-
+            
             if (capacity == -1)
                 capacity = Pools.DefaultCapacity;
-
+            
             if (maxSize == -1)
                 maxSize = Pools.DefaultMaxSize;
-
+            
             _prefab = prefab;
-            _root = root == null ? new GameObject($"Pool_{typeof(T).ToString().Split(".")[^1]}").transform : root;
+            _root = root == null ? new GameObject($"Pool_{prefab.gameObject.name}").transform : root;
             _pool = new ObjectPool<T>(CreateFunc, ActionOnGet, ActionOnRelease,
                 ActionOnDestroy, true, capacity, maxSize);
-
+            
+            OnInitialize();
             _initialized = true;
         }
-
+        
+        protected virtual void OnInitialize() {}
+        
         public T Grab()
         {
             if (!_initialized)
@@ -227,9 +195,13 @@ namespace mattmert.Utils
                 return default;
             }
             
-            return _pool.Get();
+            var item = _pool.Get();
+            OnGrab(item);
+            return item;
         }
-
+        
+        protected virtual void OnGrab(T item) {}
+        
         public void Release(T item)
         {
             if (!_initialized)
@@ -238,27 +210,54 @@ namespace mattmert.Utils
                 return;
             }
             
+            OnRelease(item);
             _pool.Release(item);
         }
         
+        protected virtual void OnRelease(T item) {}
+        
         public void Prefill(int amount)
         {
+            if (!_initialized)
+            {
+                Debug.LogError($"Pool of type {typeof(T)} is not initialized yet!");
+                return;
+            }
+            
             for (var i = 0; i < amount; i++)
             {
                 var t = _pool.Get();
                 _pool.Release(t);
             }
         }
-
+        
         public void Clear()
         {
+            if (!_initialized)
+            {
+                Debug.LogError($"Pool of type {typeof(T)} is not initialized yet!");
+                return;
+            }
+            
             _pool.Clear();
+            OnClear();
         }
-
+        
+        protected virtual void OnClear() {}
+        
         public void Dispose()
         {
+            if (!_initialized)
+            {
+                Debug.LogError($"Pool of type {typeof(T)} is not initialized yet!");
+                return;
+            }
+            
             _pool.Dispose();
+            OnDispose();
         }
+        
+        protected virtual void OnDispose() {}
         
         protected virtual void ActionOnDestroy(T obj)
         {
