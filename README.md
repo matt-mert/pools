@@ -5,7 +5,7 @@ Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
 
 You can find the repository of Signals by Yanko Oliveira [here](https://github.com/yankooliveira/signals).
 
-Author: matt-mert
+Author: [matt-mert](https://github.com/matt-mert)
 
 ### Usage:
 1) Define your pool, eg:
