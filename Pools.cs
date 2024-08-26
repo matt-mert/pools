@@ -3,7 +3,7 @@
 // ========================================================================================
 // 2024, Mert Kucukakinci  / http://github.com/matt-mert
 // ========================================================================================
-// Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
+// Inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
 // You can find the repository of Signals at https://github.com/yankooliveira/signals
 //
 // Usage:
