@@ -1,7 +1,7 @@
 # Pools
 ### A typesafe, lightweight pooling lib for Unity.
 ---
-Heavily inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
+Inspired by Signals by Yanko Oliveira, uses Unity Engine's ObjectPool
 
 You can find the repository of Signals by Yanko Oliveira [here](https://github.com/yankooliveira/signals).
 
