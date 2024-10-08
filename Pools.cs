@@ -118,11 +118,11 @@ namespace mattmert.PoolSystem
             return Bind(typeof(T));
         }
         
-        private IPool GetPoolByHash(string boardHash)
+        private IPool GetPoolByHash(string hash)
         {
             foreach (var pool in _pools.Values)
             {
-                if (pool.Hash == boardHash)
+                if (pool.Hash == hash)
                 {
                     return pool;
                 }
