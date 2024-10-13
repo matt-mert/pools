@@ -32,5 +32,3 @@ PoolHub environmentPools = new PoolHub();
 var wall = environmentPools.Get<WallPool>().Grab();
 ```
 
-
-Hit me up on [twitter](https://twitter.com/mertkucukakinci) for any suggestions or questions.
